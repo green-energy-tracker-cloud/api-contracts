@@ -1,0 +1,175 @@
+openapi: 3.0.3
+info:
+  title: Sensor Data Service API
+  version: 1.0.0
+  description: API for managing telemetry and time-series data from sensors.
+
+servers:
+  - url: /api/v1
+
+tags:
+  - name: SensorData
+    description: Telemetry operations
+
+paths:
+  /sensor-data:
+    post:
+      summary: Submit a single reading
+      operationId: createSensorData
+      tags:
+        - SensorData
+      description: Records a single data point for a sensor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSensorDataRequest'
+      responses:
+        '200':
+          description: Data recorded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorDataResponse'
+        '400':
+          description: Invalid input
+
+    get:
+      summary: Query historical data
+      operationId: listSensorData
+      tags:
+        - SensorData
+      description: Retrieves historical data points filtered by sensor, time range, and pagination.
+      parameters:
+        - name: sensor_id
+          in: query
+          description: The Sensor ID (Required)
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: start_time
+          in: query
+          description: Filter data starting from this timestamp (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          description: Filter data up to this timestamp (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 50
+      responses:
+        '200':
+          description: History retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSensorDataResponse'
+
+  /sensor-data/batch:
+    post:
+      summary: Submit batch readings
+      operationId: createSensorDataBatch
+      tags:
+        - SensorData
+      description: Optimized endpoint to upload multiple readings for a sensor at once.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSensorDataBatchRequest'
+      responses:
+        '200':
+          description: Batch processed successfully (returns 200 OK typically, or a summary)
+        '400':
+          description: Invalid batch data
+
+  /sensor-data/{id}:
+    get:
+      summary: Get single reading
+      operationId: getSensorData
+      tags:
+        - SensorData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Data point found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorDataResponse'
+        '404':
+          description: Data point not found
+
+components:
+  schemas:
+    # --- Responses ---
+    SensorDataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sensor_id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        value:
+          type: number
+          format: double
+        unit:
+          type: string
+          example: "kWh"
+
+    ListSensorDataResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SensorDataResponse'
+        total_count:
+          type: integer
+          format: int32
+        total_pages:
+          type: integer
+          format: int32
+
+    # --- Requests ---
+    CreateSensorDataRequest:
+      type: object
+      required:
+        - sensor_id
+        - value
+        - timestamp
+      properties:
+        sensor_id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time

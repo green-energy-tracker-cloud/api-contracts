@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: Sensor Service API
+  version: 1.0.0
+  description: API for managing hardware sensors and devices (CRUD and Enumerations).
+
+servers:
+  - url: /api/v1
+
+tags:
+  - name: Sensor
+    description: Operations related to physical Sensors
+
+paths:
+  /sensors:
+    post:
+      summary: Create a new sensor
+      operationId: createSensor
+      tags:
+        - Sensor
+      description: Registers a new sensor installed at a specific site.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSensorRequest'
+      responses:
+        '200':
+          description: Sensor created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '400':
+          description: Invalid input data
+
+    get:
+      summary: List sensors
+      operationId: listSensors
+      tags:
+        - Sensor
+      description: Retrieves a paginated list of sensors, filtered by site and optionally by type.
+      parameters:
+        - name: site_id
+          in: query
+          description: The Site ID to filter sensors by (Required)
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Filter by specific Sensor Type
+          required: false
+          schema:
+            $ref: '#/components/schemas/SensorType'
+        - name: page
+          in: query
+          description: Page number (0-indexed)
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: List retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSensorsResponse'
+
+  /sensors/{id}:
+    get:
+      summary: Get sensor details
+      operationId: getSensor
+      tags:
+        - Sensor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sensor found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '404':
+          description: Sensor not found
+
+    put:
+      summary: Update sensor (Full)
+      operationId: updateSensor
+      tags:
+        - Sensor
+      description: Full update of sensor details. Requires all fields.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSensorRequest'
+      responses:
+        '200':
+          description: Sensor updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '404':

@@ -1,0 +1,275 @@
+openapi: 3.0.3
+info:
+  title: Stats Service API
+  version: 1.0.0
+  description: API for managing aggregated user statistics (energy, CO2, savings).
+
+servers:
+  - url: /api/v1
+
+tags:
+  - name: Stats
+    description: Operations related to User Statistics
+
+paths:
+  /stats:
+    post:
+      summary: Create statistics record
+      operationId: createStats
+      tags:
+        - Stats
+      description: Creates a new statistical record for a user (e.g., Daily summary).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserStatsRequest'
+      responses:
+        '200':
+          description: Stats created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStatsResponse'
+        '400':
+          description: Invalid input
+
+    get:
+      summary: List statistics
+      operationId: listStats
+      tags:
+        - Stats
+      description: Retrieves a paginated list of stats, filtered by user, period type, and date range.
+      parameters:
+        - name: user_id
+          in: query
+          description: The User ID (Required)
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: period
+          in: query
+          description: Filter by Period Type (e.g., DAILY, MONTHLY)
+          required: false
+          schema:
+            $ref: '#/components/schemas/StatsPeriod'
+        - name: from_date
+          in: query
+          description: Start date for filtering (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: to_date
+          in: query
+          description: End date for filtering (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: Stats retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUserStatsResponse'
+
+  /stats/{id}:
+    get:
+      summary: Get single stat record
+      operationId: getStats
+      tags:
+        - Stats
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Record found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStatsResponse'
+        '404':
+          description: Record not found
+
+    put:
+      summary: Update statistics (Full)
+      operationId: updateStats
+      tags:
+        - Stats
+      description: Updates the numerical values of a statistic record.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserStatsRequest'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStatsResponse'
+        '404':
+          description: Record not found
+
+    delete:
+      summary: Delete statistic record
+      operationId: deleteStats
+      tags:
+        - Stats
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Deleted successfully
+        '404':
+          description: Record not found
+
+components:
+  schemas:
+    # --- Enums ---
+    StatsPeriod:
+      type: string
+      enum:
+        - STATS_PERIOD_UNSPECIFIED
+        - DAILY
+        - WEEKLY
+        - MONTHLY
+        - YEARLY
+        - ALL_TIME
+      description: The aggregation period for the statistics
+
+    # --- Responses ---
+    UserStatsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        period:
+          $ref: '#/components/schemas/StatsPeriod'
+        reference_date:
+          type: string
+          format: date-time
+        total_produced_kwh:
+          type: number
+          format: double
+        total_consumed_kwh:
+          type: number
+          format: double
+        self_consumed_kwh:
+          type: number
+          format: double
+        co2_saved_kg:
+          type: number
+          format: double
+        money_saved:
+          type: number
+          format: double
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ListUserStatsResponse:
+      type: object
+      properties:
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserStatsResponse'
+        total_count:
+          type: integer
+          format: int32
+        total_pages:
+          type: integer
+          format: int32
+
+    # --- Requests ---
+    CreateUserStatsRequest:
+      type: object
+      required:
+        - user_id
+        - period
+        - reference_date
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        period:
+          $ref: '#/components/schemas/StatsPeriod'
+        reference_date:
+          type: string
+          format: date-time
+        total_produced_kwh:
+          type: number
+          format: double
+        total_consumed_kwh:
+          type: number
+          format: double
+        self_consumed_kwh:
+          type: number
+          format: double
+        co2_saved_kg:
+          type: number
+          format: double
+        money_saved:
+          type: number
+          format: double
+
+    UpdateUserStatsRequest:
+      type: object
+      description: Update metric values only.
+      properties:
+        total_produced_kwh:
+          type: number
+          format: double
+        total_consumed_kwh:
+          type: number
+          format: double
+        self_consumed_kwh:
+          type: number
+          format: double
+        co2_saved_kg:
+          type: number
+          format: double
+        money_saved:
+          type: number
+          format: double

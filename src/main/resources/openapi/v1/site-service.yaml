@@ -1,0 +1,263 @@
+openapi: 3.0.3
+info:
+  title: Site Service API
+  version: 1.0.0
+  description: API for managing energy sites (CRUD and Pagination).
+
+servers:
+  - url: /api/v1
+
+tags:
+  - name: Site
+    description: Operations related to Site management
+
+paths:
+  /sites:
+    post:
+      summary: Create a new site
+      operationId: createSite
+      tags:
+        - Site
+      description: Creates a new energy site for a specific user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSiteRequest'
+      responses:
+        '200':
+          description: Site created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteResponse'
+        '400':
+          description: Invalid input
+
+    get:
+      summary: Get a list of sites
+      operationId: listSites
+      tags:
+        - Site
+      description: Retrieves a paginated list of sites, optionally filtered by user_id.
+      parameters:
+        - name: user_id
+          in: query
+          description: Filter sites by User ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: Page number (0-indexed)
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: List of sites retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSitesResponse'
+
+  /sites/{id}:
+    get:
+      summary: Get a site by ID
+      operationId: getSite
+      tags:
+        - Site
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the site to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Site found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteResponse'
+        '404':
+          description: Site not found
+
+    put:
+      summary: Update a site (Full Update)
+      operationId: updateSite
+      tags:
+        - Site
+      description: Replaces the site definition identified by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSiteRequest'
+      responses:
+        '200':
+          description: Site updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteResponse'
+        '404':
+          description: Site not found
+
+    patch:
+      summary: Patch a site (Partial Update)
+      operationId: patchSite
+      tags:
+        - Site
+      description: Updates specific fields of a site. Unsent fields remain unchanged.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchSiteRequest'
+      responses:
+        '200':
+          description: Site patched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteResponse'
+
+    delete:
+      summary: Delete a site
+      operationId: deleteSite
+      tags:
+        - Site
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Site deleted successfully (No Content)
+        '404':
+          description: Site not found
+
+components:
+  schemas:
+    # --- Shared Objects ---
+    GeoLocation:
+      type: object
+      description: Geographical coordinates
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+
+    # --- Responses ---
+    SiteResponse:
+      type: object
+      description: The full Site entity representation
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ListSitesResponse:
+      type: object
+      description: Wrapper object containing the list of sites and pagination metadata
+      properties:
+        sites:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteResponse'
+        total_count:
+          type: integer
+          format: int32
+        total_pages:
+          type: integer
+          format: int32
+
+    # --- Requests ---
+    CreateSiteRequest:
+      type: object
+      required:
+        - user_id
+        - name
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+
+    UpdateSiteRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+
+    PatchSiteRequest:
+      type: object
+      description: All fields are optional. Nullable fields indicate no change.
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        location:
+          $ref: '#/components/schemas/GeoLocation'
