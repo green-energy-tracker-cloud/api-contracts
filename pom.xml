@@ -6,7 +6,7 @@
 
     <groupId>com.green.energy.tracker.cloud</groupId>
     <artifactId>api-contracts</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>API Contracts</name>
 
     <properties>
