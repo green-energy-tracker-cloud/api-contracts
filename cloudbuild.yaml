@@ -1,0 +1,10 @@
+steps:
+  # Step 1: Maven Build & Deploy
+  - name: 'maven:3.9-eclipse-temurin-21'
+    entrypoint: 'mvn'
+    args: ['clean', 'deploy', '-B']
+
+timeout: '1200s'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
