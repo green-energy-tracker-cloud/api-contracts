@@ -34,6 +34,10 @@ paths:
                 $ref: '#/components/schemas/SensorResponse'
         '400':
           description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     get:
       summary: List sensors
@@ -99,6 +103,10 @@ paths:
                 $ref: '#/components/schemas/SensorResponse'
         '404':
           description: Sensor not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     put:
       summary: Update sensor (Full)
@@ -127,3 +135,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/SensorResponse'
         '404':
+          description: Sensor not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'

@@ -34,6 +34,10 @@ paths:
                 $ref: '#/components/schemas/SensorDataResponse'
         '400':
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     get:
       summary: Query historical data
@@ -99,6 +103,10 @@ paths:
           description: Batch processed successfully (returns 200 OK typically, or a summary)
         '400':
           description: Invalid batch data
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
   /sensor-data/{id}:
     get:
@@ -122,6 +130,10 @@ paths:
                 $ref: '#/components/schemas/SensorDataResponse'
         '404':
           description: Data point not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
 components:
   schemas:

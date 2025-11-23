@@ -34,6 +34,10 @@ paths:
                 $ref: '#/components/schemas/SiteResponse'
         '400':
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     get:
       summary: Get a list of sites
@@ -94,6 +98,10 @@ paths:
                 $ref: '#/components/schemas/SiteResponse'
         '404':
           description: Site not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     put:
       summary: Update a site (Full Update)
@@ -123,6 +131,10 @@ paths:
                 $ref: '#/components/schemas/SiteResponse'
         '404':
           description: Site not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     patch:
       summary: Patch a site (Partial Update)
@@ -168,6 +180,10 @@ paths:
           description: Site deleted successfully (No Content)
         '404':
           description: Site not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
 components:
   schemas:

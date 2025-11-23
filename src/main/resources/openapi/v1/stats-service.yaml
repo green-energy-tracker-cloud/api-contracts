@@ -34,6 +34,10 @@ paths:
                 $ref: '#/components/schemas/UserStatsResponse'
         '400':
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     get:
       summary: List statistics
@@ -109,6 +113,10 @@ paths:
                 $ref: '#/components/schemas/UserStatsResponse'
         '404':
           description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     put:
       summary: Update statistics (Full)
@@ -138,6 +146,10 @@ paths:
                 $ref: '#/components/schemas/UserStatsResponse'
         '404':
           description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     delete:
       summary: Delete statistic record
@@ -156,6 +168,10 @@ paths:
           description: Deleted successfully
         '404':
           description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
 components:
   schemas:

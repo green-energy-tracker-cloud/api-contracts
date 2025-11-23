@@ -1,0 +1,35 @@
+openapi: 3.0.3
+info:
+  title: Common Error Schema
+  version: 1.0.0
+
+components:
+  schemas:
+    ApiError:
+      type: object
+      description: Standard error format for all APIs
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the error
+        status:
+          type: integer
+          format: int32
+          description: HTTP Status Code
+          example: 400
+        error:
+          type: string
+          description: HTTP Status Name
+          example: "Bad Request"
+        message:
+          type: string
+          description: User friendly error message
+        path:
+          type: string
+          description: Request path
+        validationErrors:
+          type: object
+          description: Map of field names and error messages (for validation errors)
+          additionalProperties:
+            type: string
