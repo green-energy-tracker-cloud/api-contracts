@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package sensor.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.green.energy.tracker.cloud.sensor.v1";
+
+// --- CORE ENTITY ---
+message SensorData {
+  string id = 1;
+  string sensor_id = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  double value = 4;
+  string unit = 5;
+}
+
+// --- CREATE (POST) ---
+message CreateSensorDataRequest {
+  string sensor_id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  double value = 3;
+  string unit = 4;
+}
+
+// --- BATCH CREATE (POST) ---
+// Optimized for sensors sending multiple readings at once
+message CreateSensorDataBatchRequest {
+  string sensor_id = 1;
+  repeated CreateSensorDataRequest measurements = 2;
+}
+
+// --- READ (GET Single) ---
+message GetSensorDataRequest {
+  string id = 1;
+}
+
+// --- READ (GET List/History) ---
+message ListSensorDataRequest {
+  string sensor_id = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+  int32 page = 4;
+  int32 size = 5;
+}
+
+message ListSensorDataResponse {
+  repeated SensorData data = 1;
+  int32 total_count = 2;
+  int32 total_pages = 3;
+}

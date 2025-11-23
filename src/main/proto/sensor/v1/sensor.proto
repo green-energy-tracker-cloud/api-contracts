@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package sensor.v1;
+
+import "common/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.green.energy.tracker.cloud.sensor.v1";
+
+// --- ENUMS ---
+enum SensorType {
+  SENSOR_TYPE_UNSPECIFIED = 0;
+  ENERGY_METER = 1;
+  SOLAR_INVERTER = 2;
+  BATTERY = 3;
+  THERMOSTAT = 4;
+  SMART_PLUG = 5;
+}
+
+// --- CORE ENTITY ---
+message Sensor {
+  string id = 1;
+  string site_id = 2;
+  string name = 3;
+  SensorType type = 4;
+  common.v1.Status status = 5;
+  string serial_number = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+// --- CREATE (POST) ---
+message CreateSensorRequest {
+  string site_id = 1;
+  string name = 2;
+  SensorType type = 3;
+  common.v1.Status status = 4;
+  string serial_number = 5;
+}
+
+// --- READ (GET Single) ---
+message GetSensorRequest {
+  string id = 1;
+}
+
+// --- READ (GET List with Pagination) ---
+message ListSensorsRequest {
+  string site_id = 1;
+  optional SensorType type = 2;
+  int32 page = 3;
+  int32 size = 4;
+}
+
+message ListSensorsResponse {
+  repeated Sensor sensors = 1;
+  int32 total_count = 2;
+  int32 total_pages = 3;
+}
+
+// --- UPDATE (PUT) ---
+message UpdateSensorRequest {
+  string name = 2;
+  SensorType type = 3;
+  common.v1.Status status = 4;
+  string serial_number = 5;
+}
+
+// --- PARTIAL UPDATE (PATCH) ---
+message PatchSensorRequest {
+  string id = 1;
+  optional string site_id = 2;
+  optional string name = 3;
+  optional SensorType type = 4;
+  optional common.v1.Status status = 5;
+  optional string serial_number = 6;
+}
+
+// --- DELETE (DELETE) ---
+message DeleteSensorRequest {
+  string id = 1;
+}

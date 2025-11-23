@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package stats.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.green.energy.tracker.cloud.stats.v1";
+
+// --- ENUMS ---
+enum StatsPeriod {
+  STATS_PERIOD_UNSPECIFIED = 0;
+  DAILY = 1;
+  WEEKLY = 2;
+  MONTHLY = 3;
+  YEARLY = 4;
+  ALL_TIME = 5;
+}
+
+// --- CORE ENTITY ---
+message UserStats {
+  string id = 1;
+  string user_id = 2;
+  StatsPeriod period = 3;
+  google.protobuf.Timestamp reference_date = 4;
+  double total_produced_kwh = 5;
+  double total_consumed_kwh = 6;
+  double self_consumed_kwh = 7;
+  double co2_saved_kg = 8;
+  double money_saved = 9;
+  string created_at = 10;
+  string updated_at = 11;
+}
+
+// --- CREATE (POST) ---
+message CreateUserStatsRequest {
+  string user_id = 1;
+  StatsPeriod period = 2;
+  google.protobuf.Timestamp reference_date = 3;
+  double total_produced_kwh = 4;
+  double total_consumed_kwh = 5;
+  double self_consumed_kwh = 6;
+  double co2_saved_kg = 7;
+  double money_saved = 8;
+}
+
+// --- READ (GET Single) ---
+message GetUserStatsRequest {
+  string id = 1;
+}
+
+// --- READ (GET List with Pagination) ---
+message ListUserStatsRequest {
+  string user_id = 1;
+  optional StatsPeriod period = 2;
+  optional google.protobuf.Timestamp from_date = 3;
+  optional google.protobuf.Timestamp to_date = 4;
+  int32 page = 5;
+  int32 size = 6;
+}
+
+message ListUserStatsResponse {
+  repeated UserStats stats = 1;
+  int32 total_count = 2;
+  int32 total_pages = 3;
+}
+
+// --- UPDATE (PUT) ---
+message UpdateUserStatsRequest {
+  double total_produced_kwh = 1;
+  double total_consumed_kwh = 2;
+  double self_consumed_kwh = 3;
+  double co2_saved_kg = 4;
+  double money_saved = 5;
+}

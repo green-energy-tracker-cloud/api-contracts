@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package common.v1;
+
+option java_multiple_files = true;
+option java_package = "com.green.energy.tracker.cloud.common.v1";
+
+message GeoLocation {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  INACTIVE = 2;
+  MAINTENANCE = 3;
+}
