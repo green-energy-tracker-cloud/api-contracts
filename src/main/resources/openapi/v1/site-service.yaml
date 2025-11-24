@@ -2,7 +2,12 @@ openapi: 3.0.3
 info:
   title: Site Service API
   version: 1.0.0
-  description: API for managing energy sites (CRUD and Pagination).
+  description: >
+    API for managing energy sites.
+    
+    NOTE: Write operations (POST, PUT, PATCH, DELETE) are asynchronous (Fire-and-Forget).
+    They return HTTP 202 Accepted immediately after queuing the event.
+    The data is eventually consistent.
 
 servers:
   - url: /api/v1
@@ -14,11 +19,13 @@ tags:
 paths:
   /sites:
     post:
-      summary: Create a new site
+      summary: Create a new site (Async)
       operationId: createSite
       tags:
         - Site
-      description: Creates a new energy site for a specific user.
+      description: >
+        Queues a creation event for a new site. 
+        Returns immediately with the generated ID and status 'ACCEPTED'.
       requestBody:
         required: true
         content:
@@ -26,12 +33,12 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateSiteRequest'
       responses:
-        '200':
-          description: Site created successfully
+        '202':
+          description: Creation request accepted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SiteResponse'
+                $ref: '#/components/schemas/AsyncOperationResponse'
         '400':
           description: Invalid input
           content:
@@ -44,7 +51,7 @@ paths:
       operationId: listSites
       tags:
         - Site
-      description: Retrieves a paginated list of sites, optionally filtered by user_id.
+      description: Retrieves a paginated list of sites (Synchronous read from Cache/DB).
       parameters:
         - name: user_id
           in: query
@@ -104,11 +111,13 @@ paths:
                 $ref: './common-error.yaml#/components/schemas/ApiError'
 
     put:
-      summary: Update a site (Full Update)
+      summary: Update a site (Async Full Update)
       operationId: updateSite
       tags:
         - Site
-      description: Replaces the site definition identified by ID.
+      description: >
+        Queues an update event. 
+        The worker will merge the new data with the existing state.
       parameters:
         - name: id
           in: path
@@ -123,25 +132,23 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateSiteRequest'
       responses:
-        '200':
-          description: Site updated successfully
+        '202':
+          description: Update request accepted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SiteResponse'
-        '404':
-          description: Site not found
-          content:
-            application/json:
-              schema:
-                $ref: './common-error.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/AsyncOperationResponse'
+        '400':
+          description: Invalid input
 
     patch:
-      summary: Patch a site (Partial Update)
+      summary: Patch a site (Async Partial Update)
       operationId: patchSite
       tags:
         - Site
-      description: Updates specific fields of a site. Unsent fields remain unchanged.
+      description: >
+        Queues a partial update event. 
+        Only the fields present in the payload will be updated by the worker.
       parameters:
         - name: id
           in: path
@@ -156,18 +163,19 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchSiteRequest'
       responses:
-        '200':
-          description: Site patched successfully
+        '202':
+          description: Patch request accepted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SiteResponse'
+                $ref: '#/components/schemas/AsyncOperationResponse'
 
     delete:
-      summary: Delete a site
+      summary: Delete a site (Async)
       operationId: deleteSite
       tags:
         - Site
+      description: Queues a deletion event.
       parameters:
         - name: id
           in: path
@@ -176,14 +184,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
-          description: Site deleted successfully (No Content)
-        '404':
-          description: Site not found
+        '202':
+          description: Deletion request accepted
           content:
             application/json:
               schema:
-                $ref: './common-error.yaml#/components/schemas/ApiError'
+                $ref: '#/components/schemas/AsyncOperationResponse'
 
 components:
   schemas:
@@ -200,9 +206,31 @@ components:
           format: double
 
     # --- Responses ---
+
+    # NEW: Response object for Async Operations (202 Accepted)
+    AsyncOperationResponse:
+      type: object
+      description: Minimal response indicating the operation was queued.
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the resource being created, updated, or deleted.
+        status:
+          type: string
+          enum: [ACCEPTED, PENDING]
+          example: ACCEPTED
+        message:
+          type: string
+          description: Optional info message
+          example: "Request queued for processing"
+
     SiteResponse:
       type: object
-      description: The full Site entity representation
+      description: The full Site entity representation (Used only in GET)
       properties:
         id:
           type: string
