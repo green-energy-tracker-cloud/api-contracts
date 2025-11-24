@@ -8,6 +8,13 @@ import "google/protobuf/empty.proto";
 option java_multiple_files = true;
 option java_package = "com.green.energy.tracker.cloud.site.v1";
 
+enum SiteEventType {
+  CREATE = 0;
+  UPDATE = 1;
+  DELETE = 2;
+  PATCH = 3;
+}
+
 // --- CORE ENTITY ---
 message Site {
   string id = 1;

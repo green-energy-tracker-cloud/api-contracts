@@ -18,6 +18,13 @@ enum SensorType {
   SMART_PLUG = 5;
 }
 
+enum SensorEventType {
+  CREATE = 0;
+  UPDATE = 1;
+  DELETE = 2;
+  PATCH = 3;
+}
+
 // --- CORE ENTITY ---
 message Sensor {
   string id = 1;
