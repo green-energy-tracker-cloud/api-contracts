@@ -31,7 +31,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateSiteRequest'
+              $ref: '#/components/schemas/SiteRequest'
       responses:
         '202':
           description: Creation request accepted
@@ -118,19 +118,12 @@ paths:
       description: >
         Queues an update event. 
         The worker will merge the new data with the existing state.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSiteRequest'
+              $ref: '#/components/schemas/SiteRequest'
       responses:
         '202':
           description: Update request accepted
@@ -149,19 +142,12 @@ paths:
       description: >
         Queues a partial update event. 
         Only the fields present in the payload will be updated by the worker.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchSiteRequest'
+              $ref: '#/components/schemas/SiteRequest'
       responses:
         '202':
           description: Patch request accepted
@@ -267,7 +253,7 @@ components:
           format: int32
 
     # --- Requests ---
-    CreateSiteRequest:
+    SiteRequest:
       type: object
       required:
         - user_id
@@ -276,29 +262,6 @@ components:
         user_id:
           type: string
           format: uuid
-        name:
-          type: string
-        address:
-          type: string
-        location:
-          $ref: '#/components/schemas/GeoLocation'
-
-    UpdateSiteRequest:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-        address:
-          type: string
-        location:
-          $ref: '#/components/schemas/GeoLocation'
-
-    PatchSiteRequest:
-      type: object
-      description: All fields are optional. Nullable fields indicate no change.
-      properties:
         name:
           type: string
         address:
