@@ -83,99 +83,93 @@ paths:
                 $ref: '#/components/schemas/ListSitesResponse'
 
   /sites/{id}:
-    get:
-      summary: Get a site by ID
-      operationId: getSite
-      tags:
-        - Site
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The ID of the site to retrieve
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Site found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SiteResponse'
-        '404':
-          description: Site not found
-          content:
-            application/json:
-              schema:
-                $ref: './common-error.yaml#/components/schemas/ApiError'
-
-    put:
-      summary: Update a site (Async Full Update)
-      operationId: updateSite
-      tags:
-        - Site
-      description: >
-        Queues an update event. 
-        The worker will merge the new data with the existing state.
-      requestBody:
+    parameters:
+      - name: id
+        in: path
         required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SiteRequest'
-      responses:
-        '202':
-          description: Update request accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AsyncOperationResponse'
-        '400':
-          description: Invalid input
+        description: The ID of the site
+        schema:
+          type: string
+          format: uuid
 
-    patch:
-      summary: Patch a site (Async Partial Update)
-      operationId: patchSite
-      tags:
-        - Site
-      description: >
-        Queues a partial update event. 
-        Only the fields present in the payload will be updated by the worker.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SiteRequest'
-      responses:
-        '202':
-          description: Patch request accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AsyncOperationResponse'
+      get:
+        summary: Get a site by ID
+        operationId: getSite
+        tags:
+          - Site
+        responses:
+          '200':
+            description: Site found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SiteResponse'
+          '404':
+            description: Site not found
+            content:
+              application/json:
+                schema:
+                  $ref: './common-error.yaml#/components/schemas/ApiError'
 
-    delete:
-      summary: Delete a site (Async)
-      operationId: deleteSite
-      tags:
-        - Site
-      description: Queues a deletion event.
-      parameters:
-        - name: id
-          in: path
+      put:
+        summary: Update a site (Async Full Update)
+        operationId: updateSite
+        tags:
+          - Site
+        description: >
+          Queues an update event. 
+          The worker will merge the new data with the existing state.
+        requestBody:
           required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '202':
-          description: Deletion request accepted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AsyncOperationResponse'
+                $ref: '#/components/schemas/SiteRequest'
+        responses:
+          '202':
+            description: Update request accepted
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AsyncOperationResponse'
+          '400':
+            description: Invalid input
+
+      patch:
+        summary: Patch a site (Async Partial Update)
+        operationId: patchSite
+        tags:
+          - Site
+        description: >
+          Queues a partial update event. 
+          Only the fields present in the payload will be updated by the worker.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteRequest'
+        responses:
+          '202':
+            description: Patch request accepted
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AsyncOperationResponse'
+
+      delete:
+        summary: Delete a site (Async)
+        operationId: deleteSite
+        tags:
+          - Site
+        description: Queues a deletion event.
+        responses:
+          '202':
+            description: Deletion request accepted
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AsyncOperationResponse'
 
 components:
   schemas:
