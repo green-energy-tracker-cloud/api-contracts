@@ -253,6 +253,9 @@ components:
         - user_id
         - name
       properties:
+        id:
+          type: string
+          format: uuid
         user_id:
           type: string
           format: uuid
