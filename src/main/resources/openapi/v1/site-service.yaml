@@ -115,7 +115,7 @@ paths:
       summary: Update a site (Async Full Update)
       operationId: updateSite
       tags:
-         - Site
+        - Site
       description: >
         Queues an update event. 
         The worker will merge the new data with the existing state.
@@ -177,17 +177,22 @@ components:
     GeoLocation:
       type: object
       description: Geographical coordinates
+      required:
+        - latitude
+        - longitude
       properties:
         latitude:
           type: number
           format: double
+          minimum: -90
+          maximum: 90
         longitude:
           type: number
           format: double
+          minimum: -180
+          maximum: 180
 
     # --- Responses ---
-
-    # NEW: Response object for Async Operations (202 Accepted)
     AsyncOperationResponse:
       type: object
       description: Minimal response indicating the operation was queued.
@@ -252,6 +257,8 @@ components:
       required:
         - user_id
         - name
+        - address
+        - location
       properties:
         id:
           type: string
@@ -261,7 +268,9 @@ components:
           format: uuid
         name:
           type: string
+          minLength: 1
         address:
           type: string
+          minLength: 1
         location:
           $ref: '#/components/schemas/GeoLocation'
