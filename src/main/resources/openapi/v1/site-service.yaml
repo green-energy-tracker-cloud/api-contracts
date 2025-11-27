@@ -45,6 +45,24 @@ paths:
             application/json:
               schema:
                 $ref: './common-error.yaml#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     get:
       summary: Get a list of sites
@@ -81,6 +99,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListSitesResponse'
+        '400':
+          description: Invalid input (e.g., invalid user_id format)
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
   /sites/{id}:
     parameters:
@@ -104,8 +146,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SiteResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
         '404':
           description: Site not found
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '500':
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -117,7 +177,7 @@ paths:
       tags:
         - Site
       description: >
-        Queues an update event. 
+        Queues an update event. The existence of the site is not checked at this stage.
         The worker will merge the new data with the existing state.
       requestBody:
         required: true
@@ -134,6 +194,28 @@ paths:
                 $ref: '#/components/schemas/AsyncOperationResponse'
         '400':
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     patch:
       summary: Patch a site (Async Partial Update)
@@ -141,7 +223,7 @@ paths:
       tags:
         - Site
       description: >
-        Queues a partial update event. 
+        Queues a partial update event. The existence of the site is not checked at this stage.
         Only the fields present in the payload will be updated by the worker.
       requestBody:
         required: true
@@ -156,13 +238,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AsyncOperationResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
     delete:
       summary: Delete a site (Async)
       operationId: deleteSite
       tags:
         - Site
-      description: Queues a deletion event.
+      description: >
+        Queues a deletion event. The existence of the site is not checked at this stage.
       responses:
         '202':
           description: Deletion request accepted
@@ -170,6 +277,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AsyncOperationResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: './common-error.yaml#/components/schemas/ApiError'
 
 components:
   schemas:
